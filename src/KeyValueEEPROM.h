@@ -22,7 +22,7 @@ class KeyValueEEPROMClass {
         // Public methods
         void begin() {
                 // If this method was already called, return.
-                if (LibraryStartet) return;
+                if (started) return;
 
                 // Read JSON data from the EEPROM.
                 String json = readEEPROM();
@@ -132,7 +132,7 @@ class KeyValueEEPROMClass {
     // Properties
     StaticJsonBuffer<KeyValueEEPROM_SIZE> jsonBuffer;
     JsonObject *root;
-    bool LibraryStartet = false;
+    bool started = false;
 };
 
 static KeyValueEEPROMClass KeyValueEEPROM;
