@@ -28,47 +28,45 @@ class KeyValueEEPROMClass {
                 String json = readEEPROM();
 
                 // Parse JSON data.
-                root = &jsonBuffer.parseObject(json);
+                DeserializationError error = deserializeJson(jsonDocument, json);
 
                 // If JSON couldn't be parsed,
-                if (!root->success()) {
-                        // then create an new key-value store.
-                        clear();
+                if (error) {
+                    // then create an new key-value store.
+                    clear();
                 }
         };
-        void clear() {
+        void clear(bool allEEPROM = false) {
                 // Clear buffer.
-                jsonBuffer.clear();
+                jsonDocument.clear();
 
-                // Create JSON root object.
-                root = &jsonBuffer.createObject();
+                // Clear EEPROM if requested
+                if (allEEPROM)
+                    clearEEPROM();
         };
         void remove(String key) {
                 // Remove key.
-                root->remove(key);
+                jsonDocument.remove(key);
         };
         void apply() {
-                // Clear the EEPROM.
-                clearEEPROM();
-
                 // Extract JSON data from the root object.
                 String json;
-                root->printTo(json);
+                serializeJson(jsonDocument, json);
 
                 // Write JSON data to the EEPROM.
                 writeEEPROM(json);
         };
         bool exists(String key) {
-                return root->containsKey(key);
+                return jsonDocument.containsKey(key);
         };
         template <typename T>
         T get(String key) {
-                T value = (*root)[key].as<T>();
+                T value = jsonDocument[key].as<T>();
                 return value;
         };
         template <typename T>
         void set(String key, T value) {
-                (*root)[key] = value;
+                jsonDocument[key] = value;
         };
 
   private:
@@ -130,8 +128,7 @@ class KeyValueEEPROMClass {
     }
 
     // Properties
-    StaticJsonBuffer<KeyValueEEPROM_SIZE> jsonBuffer;
-    JsonObject *root;
+    StaticJsonDocument<KeyValueEEPROM_SIZE> jsonDocument;
     bool started = false;
 };
 
