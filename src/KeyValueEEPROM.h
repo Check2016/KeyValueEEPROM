@@ -65,6 +65,14 @@ class KeyValueEEPROMClass {
                 return value;
         };
         template <typename T>
+        T get(String key, T defaultValue) {
+                if (exists(key)) {
+                    return get<T>(key);
+                }else {
+                    return defaultValue;
+                }
+        };
+        template <typename T>
         void set(String key, T value) {
                 jsonDocument[key] = value;
         };
